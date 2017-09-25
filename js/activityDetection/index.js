@@ -21,6 +21,7 @@ function activityDetection() {
 
     // If idle for more than 4 mins, monitor system idle status every second
     if (!intervalId) {
+        activityWindow.send('check-memory-usage', {});
         monitorUserActivity();
     }
     return null;

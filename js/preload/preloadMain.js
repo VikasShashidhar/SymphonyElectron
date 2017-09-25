@@ -315,6 +315,37 @@ function createAPI() {
 
     });
 
+    /**
+     * An event triggered by the activity detection module when the user is inactive
+     * to check the memory usage of the renderer process and trigger a reload if required.
+     * NOTE: This is a stop-gap. See ELECTRON-136
+     * @type {String} arg - the protocol url
+     */
+    local.ipcRenderer.on('check-memory-usage', (event, arg) => {
+        if(checkMemoryExceedsLimit()) {
+            window.location.reload();
+        }
+    });
+
+    /**
+     * Check if memory consumption exceeds 800 MB
+     * NOTE: This is a stop-gap. See ELECTRON-136
+     * @type {String} arg - the protocol url
+     */
+    function checkMemoryExceedsLimit() {
+        // Memory upper limit in KBs
+        let memoryUpperLimit = 819200;
+        let memoryInfo = process.getProcessMemoryInfo().workingSetSize;
+        
+        console.log(memoryInfo);
+
+        if(memoryInfo < memoryUpperLimit) {
+            return false;
+        }
+
+        return true;
+    }
+
     function updateOnlineStatus() {
         local.ipcRenderer.send(apiName, {
             cmd: apiCmds.isOnline,
